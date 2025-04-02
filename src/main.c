@@ -68,10 +68,9 @@ int raylib_main(void)
 
         // CLAY rendering
         Clay_Raylib_Render(content, fonts);
-
+        
         // Raylib drawing scope end
         EndDrawing();
-        can_read();
     }
 
     // Shutting down the window

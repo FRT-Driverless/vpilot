@@ -15,7 +15,9 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
+#include <fcntl.h>
 
+#include "renderers/raylib/raylib.h"
 
 int s = -1;
 int can_init(const char* channel){
@@ -36,6 +38,10 @@ int can_init(const char* channel){
         fprintf(stderr, "%s\n", strerror(errno));
         return 2;
     }
+    int flags = fcntl(s, F_GETFL, 0);
+    if (fcntl(s, F_SETFL, flags | O_NONBLOCK)<0){
+        return 3;
+    }
     return 0; 
 }
 
@@ -44,11 +50,25 @@ void can_read(){
     int nbytes;
     assert(s>=0);
 
-    printf("%d\n", nbytes);
+    // printf("before: %d\n", nbytes);
     nbytes = read(s, &frame, sizeof(struct can_frame));
-    printf("%d\n", nbytes);
-    if (nbytes>0){
-        printf("Received id %d, data: %d | %d", frame.can_id, frame.data[0], frame.data[1]);
+    // printf("after: %d\n", nbytes);
+    if (nbytes>=0){
+        TraceLog(LOG_INFO, "Received id %d, data: %d | %d", frame.can_id, frame.data[0], frame.data[1]);
     }
+}
+
+#define array_len(arr) sizeof(arr) / sizeof(arr[0])
+int can_write(uint32_t id, uint8_t dlc, uint8_t* data){
+    assert(dlc == array_len(data));
+    
+    int nbytes;
+    struct can_frame frame;
+    
+    frame.can_id = id;
+    frame.can_dlc = dlc;
+    memcpy(frame.data, data, array_len(data));
+    
+    nbytes = write(s, &frame, sizeof(struct can_frame));
 }
 #endif

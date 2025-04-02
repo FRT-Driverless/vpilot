@@ -17,6 +17,9 @@ const Clay_Color BTN_NEUTRAL_HOVER = { 0, 71, 171, 192 };
 const Clay_Color BTN_LAUNCH = { 210, 43, 43, 255 };
 const Clay_Color BTN_LAUNCH_HOVER = { 210, 43, 43, 192 };
 
+const Clay_Color BTN_FORCED_GEAR = { 242, 140, 40, 255 };
+const Clay_Color BTN_FORCED_GEAR_HOVER = { 242, 140, 40, 192 };
+
 const Clay_Color BTN_TAG = { 210, 43, 43, 255 };
 const Clay_Color BTN_TAG_HOVER = { 210, 43, 43, 192 };
 
@@ -97,7 +100,7 @@ Clay_RenderCommandArray vp_layout()
             CLAY({
                 .id = CLAY_ID("Launch Button"),
                 .layout = {
-                    .sizing = { .width = CLAY_SIZING_PERCENT(0.5), .height = CLAY_SIZING_GROW() },
+                    .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
                     .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
                 },
                 .backgroundColor = Clay_Hovered() ? BTN_LAUNCH_HOVER : BTN_LAUNCH,
@@ -112,9 +115,26 @@ Clay_RenderCommandArray vp_layout()
                 );
             }
             CLAY({
+                .id = CLAY_ID("Forced Gear Button"),
+                .layout = {
+                    .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
+                    .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
+                },
+                .backgroundColor = Clay_Hovered() ? BTN_FORCED_GEAR_HOVER : BTN_FORCED_GEAR,
+            }) {
+                Clay_OnHover(&ClayLogAction, (intptr_t) 0);
+                CLAY_TEXT(
+                    CLAY_STRING("FORCED GEAR"),
+                    CLAY_TEXT_CONFIG({
+                        .fontSize = 24,
+                        .textColor = COLOR_BLACK,
+                    })
+                );
+            }
+            CLAY({
                 .id = CLAY_ID("Tag Button"),
                 .layout = {
-                    .sizing = { .width = CLAY_SIZING_PERCENT(0.5), .height = CLAY_SIZING_GROW() },
+                    .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
                     .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER }
                 },
                 .backgroundColor = Clay_Hovered() ? BTN_TAG_HOVER : BTN_TAG,

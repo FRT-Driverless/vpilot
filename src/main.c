@@ -10,21 +10,28 @@
 #ifdef RENDERER_RAYLIB
 #  include "renderers/raylib/raylib.h"
 #  include "renderers/raylib/clay_renderer_raylib.c"
+#  define LOG(...)  TraceLog(LOG_INFO, __VA_ARGS__)
+#  define ERR(...)  TraceLog(LOG_ERROR, __VA_ARGS__)
 #endif
 
 #ifdef RENDERER_SDL2
 #  include "renderers/SDL2/clay_renderer_SDL2.c"
+#  define LOG(...)  fprintf(stdout, __VA_ARGS__)
+#  define ERR(...)  fprintf(stderr, __VA_ARGS__)
 #endif
 
 // Custom includes
 #include "layout.h"
-#include "can.h"
+
+#ifdef CAN_AVAILABLE
+#  include "can.h"
+#endif
 
 // CLAY error handler
 void HandleClayErrors(Clay_ErrorData errorData)
 {
     // Just logging, ignoring the error
-    fprintf(stderr, "%s\n", errorData.errorText.chars);
+    ERR("%s\n", errorData.errorText.chars);
 }
 
 #ifdef RENDERER_RAYLIB
@@ -49,7 +56,7 @@ int raylib_main(void)
     // Limiting the FPS rate
     SetTargetFPS(60);
     int v;
-    if(v = can_init("vcan0")) return v;
+    /* if(v = can_init("vcan0")) return v; */
 
     // Game Loop
     while (!WindowShouldClose())
@@ -86,19 +93,19 @@ int sdl2_main(void)
     // Init SDL2 context
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        fprintf(stderr, "Could not init SDL2: %s\n", SDL_GetError());
+        ERR("Could not init SDL2: %s\n", SDL_GetError());
         return 1;
     }
 
     if (TTF_Init() < 0)
     {
-        fprintf(stderr, "Could not init TTF: %s\n", TTF_GetError());
+        ERR("Could not init TTF: %s\n", TTF_GetError());
         return 1;
     }
 
     if (IMG_Init(IMG_INIT_PNG) < 0)
     {
-        fprintf(stderr, "Could not init IMG: %s\n", IMG_GetError());
+        ERR("Could not init IMG: %s\n", IMG_GetError());
         return 1;
     }
 
@@ -119,7 +126,7 @@ int sdl2_main(void)
 
     if (!window)
     {
-        fprintf(stderr, "Could not create SDL2 window: %s\n", SDL_GetError());
+        ERR("Could not create SDL2 window: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -134,7 +141,7 @@ int sdl2_main(void)
 
     if (!renderer)
     {
-        fprintf(stderr, "Could not create SDL2 renderer: %s\n", SDL_GetError());
+        ERR("Could not create SDL2 renderer: %s\n", SDL_GetError());
         return 1;
     }
 
@@ -154,7 +161,7 @@ int sdl2_main(void)
     TTF_Font *font = TTF_OpenFont("../resources/Roboto-Regular.ttf", 16);
 
     if (!font) {
-        fprintf(stderr, "Could not load font: %s\n", TTF_GetError());
+        ERR("Could not load font: %s\n", TTF_GetError());
         return 1;
     }
 

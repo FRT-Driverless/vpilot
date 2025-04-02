@@ -1,25 +1,25 @@
-#ifndef CAN_H
-#define CAN_H
-//std library
+#ifndef CAN_H_
+#define CAN_H_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-//socket
+
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-//can
+
 #include <linux/can.h>
 #include <linux/can/raw.h>
-//other crap
+
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
 
-#include "renderers/raylib/raylib.h"
-
+// Globals
 int s = -1;
+
 int can_init(const char* channel){
     assert(strcmp(channel, "can0") == 0 || strcmp(channel,"vcan0") == 0);
 
@@ -35,7 +35,7 @@ int can_init(const char* channel){
     addr.can_family = AF_CAN;
     addr.can_ifindex = ifr.ifr_ifindex;
     if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0){
-        fprintf(stderr, "%s\n", strerror(errno));
+        ERR("%s\n", strerror(errno));
         return 2;
     }
     int flags = fcntl(s, F_GETFL, 0);
@@ -50,15 +50,14 @@ void can_read(){
     int nbytes;
     assert(s>=0);
 
-    // printf("before: %d\n", nbytes);
     nbytes = read(s, &frame, sizeof(struct can_frame));
-    // printf("after: %d\n", nbytes);
     if (nbytes>=0){
-        TraceLog(LOG_INFO, "Received id %d, data: %d | %d", frame.can_id, frame.data[0], frame.data[1]);
+        LOG("Received id %d, data: %d | %d", frame.can_id, frame.data[0], frame.data[1]);
     }
 }
 
 #define array_len(arr) sizeof(arr) / sizeof(arr[0])
+
 int can_write(uint32_t id, uint8_t dlc, uint8_t* data){
     assert(dlc == array_len(data));
     
@@ -71,4 +70,5 @@ int can_write(uint32_t id, uint8_t dlc, uint8_t* data){
     
     nbytes = write(s, &frame, sizeof(struct can_frame));
 }
-#endif
+
+#endif // CAN_H_

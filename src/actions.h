@@ -13,7 +13,7 @@ void ClayLogAction(Clay_ElementId elementId, Clay_PointerData pointerInfo, intpt
     
     if (pointerInfo.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME)
     {
-        printf("CLICK: '%s'\n", elementId.stringId.chars);
+        LOG("CLICK: '%s'\n", elementId.stringId.chars);
     }
 }
 

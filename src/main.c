@@ -18,6 +18,7 @@
 
 // Custom includes
 #include "layout.h"
+#include "can.h"
 
 // CLAY error handler
 void HandleClayErrors(Clay_ErrorData errorData)
@@ -47,6 +48,8 @@ int raylib_main(void)
 
     // Limiting the FPS rate
     SetTargetFPS(60);
+    int v;
+    if(v = can_init("vcan0")) return v;
 
     // Game Loop
     while (!WindowShouldClose())
@@ -68,6 +71,7 @@ int raylib_main(void)
 
         // Raylib drawing scope end
         EndDrawing();
+        can_read();
     }
 
     // Shutting down the window
